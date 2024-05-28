@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommendation System</title>
+    <style>
+        /* General styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            background-color: #34495e;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #e74c3c;
+        }
+
+        /* Form styles */
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            color: #ecf0f1;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #e74c3c;
+            color: #ecf0f1;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #c0392b;
+        }
+
+        /* Recommendations styles */
+        #recommendations {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .movie {
+            background-color: #1abc9c;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .movie:hover {
+            transform: scale(1.05);
+            background-color: #16a085;
+        }
+
+        .movie h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+
+        .movie p {
+            margin: 5px 0;
+            color: #34495e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Movie Recommendation System</h1>
+        <div>
+            <label for="title">Enter a Movie You Liked:</label>
+            <input type="text" id="title" placeholder="e.g., The Shawshank Redemption">
+            <button onclick="getRecommendations()">Get Recommendations</button>
+        </div>
+        <div id="recommendations"></div>
+    </div>
+    <script>
+        function getRecommendations() {
+            const title = document.getElementById('title').value;
+            fetch('/recommend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ title: title })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const recommendationsDiv = document.getElementById('recommendations');
+                recommendationsDiv.innerHTML = '';
+                if (data.length > 0) {
+                    data.forEach(movie => {
+                        const movieDiv = document.createElement('div');
+                        movieDiv.className = 'movie';
+                        movieDiv.innerHTML = `<h3>${movie.title}</h3><p>Genre: ${movie.genre.join(', ')}</p><p>Year: ${movie.year}</p><p>Rating: ${movie.rating}</p>`;
+                        recommendationsDiv.appendChild(movieDiv);
+                    });
+                } else {
+                    recommendationsDiv.innerHTML = '<p>No recommendations found. Please try another movie.</p>';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
